@@ -36,9 +36,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:5173",
   credentials: true
 }));
+
+/*app.use(cors({
+  origin: "*",
+  credentials: true
+}));*/
 app.use(express.static("public"));
 
 const port = process.env.PORT || 8081;
@@ -1496,13 +1501,13 @@ io.on("connection", async (socket) => {
 
         /* ---------- ASK EMAIL ---------- */
         if (session.step === "ASK_CONFIRMATION") {
-          if (message.toLowerCase() !== "yes") {
+          if (message.trim().toLowerCase() !== "yes") {
             return socket.emit("bot_message", {
               message: "Please give confirmation so that we can chat",
               title: "Introduction"
             });
           }
-          if (message.toLowerCase() === "no") {
+          if (message.trim().toLowerCase() === "no") {
             return socket.emit("bot_message", {
               message: "OK! Thanks for coming",
               title: "Introduction"
@@ -1528,7 +1533,7 @@ io.on("connection", async (socket) => {
           const systemprompt = await buildSystemPrompt(knowledge, company_id)
 
           const completion = await groq.chat.completions.create({
-            model: "llama-3.1-8b-instant",
+            model: "openai/gpt-oss-120b",
             messages: [
               { role: "system", content: systemprompt },
               { role: "user", content: message }
@@ -1574,13 +1579,13 @@ io.on("connection", async (socket) => {
         }
 
         if (session.step === "ASK_PERMISSION") {
-          if (message.toLowerCase() !== "yes") {
+          if (message.trim().toLowerCase() !== "yes") {
             return socket.emit("bot_message", {
               message: "Please give confirmation so that we can chat more",
               title: "Introduction"
             });
           }
-          if (message.toLowerCase() === "no") {
+          if (message.trim().toLowerCase() === "no") {
             return socket.emit("bot_message", {
               message: "OK! Thanks for coming",
               title: "Introduction"
@@ -1690,7 +1695,7 @@ io.on("connection", async (socket) => {
         const systemprompt = await buildSystemPrompt(knowledge, company_id)
 
         const completion = await groq.chat.completions.create({
-          model: "llama-3.1-8b-instant",
+          model: "openai/gpt-oss-120b",
           messages: [
             { role: "system", content: systemprompt },
             { role: "user", content: message }

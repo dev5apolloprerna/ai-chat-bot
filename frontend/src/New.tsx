@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import { Users } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { type NavigateFunction } from 'react-router-dom';
@@ -78,7 +80,7 @@ export default function New() {
           id: id
         });
         if (res.data.success === true) {
-          setscript(res.data.data[0].script);
+setscript(res.data.data.script);
         }
       }
       catch (err: unknown) {
@@ -93,7 +95,7 @@ export default function New() {
       const company_id = localStorage.getItem("id");
       console.log(company_id);
       try {
-        const res = await axios.post(`${import.meta.env.VITE_BACK_URL}/user/fetchdata`, {
+        const res = await axios.post(`${import.meta.env.VITE_BACK_URL}/user/fetchusers`, {
           company_id: company_id
         });
 

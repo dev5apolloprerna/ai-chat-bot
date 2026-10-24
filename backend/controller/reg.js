@@ -608,40 +608,52 @@ export const changepassword = async (req, res) => {
 // AUTH MIDDLEWARE
 // ======================
 
-export const auth = (req, res, next) => {
+export const auth = async (req, res, next) => {
+  try {
+    const header = req.headers.authorization;
 
-   try {
-    const authHeader = req.headers.authorization;
+    // Existing Bearer-token login flow.
+    if (header?.startsWith("Bearer ")) {
+      const token = header.slice(7);
 
-    // Check if header exists
-    if (!authHeader) {
+      if (token && token !== "undefined" && token !== "null") {
+        const decoded = jwt.verify(token, "your_secret_key");
+        req.user = decoded.id;
+        return next();
+      }
+    }
+
+    // Cookie created by /user/login.
+    const cookieToken = req.cookies?.token;
+
+    if (!cookieToken) {
       return res.status(401).json({
         success: false,
-        message: "No token provided"
+        message: "Please login first"
       });
     }
 
-    // Extract token (Bearer TOKEN)
-    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(cookieToken, process.env.JWT_KEY);
 
-    if (!token) {
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("company_id")
+      .eq("email", decoded.email)
+      .single();
+
+    if (error || !user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid token format"
+        message: "User not found"
       });
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, "your_secret_key");
-
-    // Attach user data to request
-    req.user = decoded.id;
-
-    next(); // go to next function (your controller)
-  } catch (err) {
+    req.user = user.company_id;
+    return next();
+  } catch {
     return res.status(401).json({
       success: false,
-      message: "Invalid or expired token"
+      message: "Invalid or expired login"
     });
   }
 };

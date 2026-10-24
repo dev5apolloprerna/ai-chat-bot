@@ -16,7 +16,8 @@ if (!companyId) { console.error("No company ID"); return; }
  button.style.cursor = "pointer"; 
  document.body.appendChild(button); 
  const iframe = document.createElement("iframe"); 
- iframe.src = `https://salexo.co.in/chat?company=${companyId}`; 
+ //iframe.src = `https://salexo.co.in/chat?company=${companyId}`; 
+ iframe.src = `http://localhost:5173/chat?company=${companyId}`;
  iframe.style.position = "fixed"; 
  iframe.style.bottom = "30px"; 
  iframe.style.right = "80px"; 

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { signup, login, verify, logout,fetchusers, auth1 } from "../controller/user.js";
+import { auth } from "../controller/reg.js";
 
 
 
@@ -9,6 +10,5 @@ userroute.post('/signup', signup);
 userroute.post('/login', login);
 userroute.post('/logout', logout);
 userroute.get('/verify', verify);
-userroute.post('/fetchusers',auth1 ,fetchusers);
-
+userroute.post('/fetchusers', auth, fetchusers);
 export default userroute;
